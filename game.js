@@ -66,6 +66,7 @@ function create ()
     player.on('pointerover', function () {
 
         player.setTint(0x7878ff);
+        //window.location.href = "index.html";
 
     });
 
@@ -87,14 +88,35 @@ function create ()
 
     });
 
-    this.input.on('drag', function (pointer, player, dragX, dragY) {
+    var dragstartposition = {};
+    var dragstartposition2= {};
 
+    this.input.on('drag', function (pointer, player, dragX, dragY) {
+        var deltaX = player.x - dragstartposition.x;
         player.x = dragX;
-        player2.x = dragX;
+        player2.x = dragstartposition2.x-deltaX;
 
         player.y = dragY;
-        
+        player2.y = dragstartposition2.y-deltaY;
+
+       
+
+        console.log(deltaX);
+
+        //var dist = Phaser.Math.Distance.BetweenPoints(player, player2);
+        //console.log(dist);
+
     });
+
+    this.input.on('dragstart', function (pointer, player, dragX, dragY) {
+        console.log('dragstart')
+        dragstartposition.x=player.x;
+        dragstartposition.y=player.y;
+
+        dragstartposition2.x=player2.x;
+        dragstartposition2.y=player2.y;
+    });
+    
 
     
     this.input.on('dragend', function (pointer, gameObject) {
