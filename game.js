@@ -54,11 +54,13 @@ function create ()
         this.physics.moveToObject(player, target, 400);
         this.physics.moveToObject(player2, target, 400);
         
+
     }, this);
 
     this.input.setDraggable(player);
     this.input.setDraggable(player2);
  
+    
     this.input.dragDistanceThreshold = 16;
 
     player.on('pointerover', function () {
@@ -90,8 +92,11 @@ function create ()
         player.x = dragX;
         player2.x = dragX;
 
+        player.y = dragY;
+        
     });
 
+    
     this.input.on('dragend', function (pointer, gameObject) {
 
         gameObject.clearTint();
