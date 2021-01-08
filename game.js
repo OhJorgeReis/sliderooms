@@ -93,16 +93,14 @@ function create ()
 
     this.input.on('drag', function (pointer, player, dragX, dragY) {
         var deltaX = player.x - dragstartposition.x;
+
         player.x = dragX;
         player2.x = dragstartposition2.x-deltaX;
 
         player.y = dragY;
         player2.y = dragstartposition2.y-deltaY;
 
-       
-
         console.log(deltaX);
-
         //var dist = Phaser.Math.Distance.BetweenPoints(player, player2);
         //console.log(dist);
 
@@ -116,8 +114,6 @@ function create ()
         dragstartposition2.x=player2.x;
         dragstartposition2.y=player2.y;
     });
-    
-
     
     this.input.on('dragend', function (pointer, gameObject) {
 
