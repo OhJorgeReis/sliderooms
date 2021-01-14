@@ -12,18 +12,28 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var database = firebase.database();
 
+var ref = database.ref("position");
+ref.on("value", gotData, errData);
 
-var ref = database.ref('position');
-ref.on('value', gotData, errData);
-
-function gotData(data){
-console.log(data.val());
+function gotData(data) {
+  console.log(data.val());
+  var positions = data.val();
+  var keys = Object.keys(positions);
+  console.log(keys);
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var positionx = positions[k].positionx;
+    var positiony = positions[k].positiony;
+    var positionx2 = positions[k].positionx2;
+    var positiony2 = positions[k].positiony2;
+    console.log(positiony, positionx, positiony2, positionx2);
+  }
 }
 
-function errData(err){
-    console.log('Error!');
-    console.log(err);
-    }
+function errData(err) {
+  console.log("Error!");
+  console.log(err);
+}
 
 var config = {
   type: Phaser.AUTO,
@@ -45,22 +55,21 @@ var config = {
 };
 
 var player;
+var player2;
 var target = new Phaser.Math.Vector2();
 var game = new Phaser.Game(config);
 var map;
 var cursors;
 
+const urlParameter = new URLSearchParams(window.location.search);
+this.ID = urlParameter.get("player");
+
 function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
   this.load.tilemapCSV("map", "NEWTRY.csv");
-  this.load.spritesheet("player", "red.png", {
-    frameWidth: 100,
-    frameHeight: 100,
-  });
-  this.load.spritesheet("player2", "blu.png", {
-    frameWidth: 100,
-    frameHeight: 100,
-  });
+
+  this.load.atlas("player", "redspritesheet.png", "redsprites.json");
+  this.load.atlas("player2", "bluespritesheet.png", "bluesprites.json");
 }
 
 function create() {
@@ -70,8 +79,52 @@ function create() {
 
   map.setCollisionBetween(1, 2);
 
-  player = this.physics.add.sprite(200, 400, "player", 1).setInteractive();
-  player2 = this.physics.add.sprite(1000, 800, "player2", 1).setInteractive();
+  this.anims.create({
+    key: "walkright",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "walking",
+      end: 3,
+      zeroPad: 3,
+    }),
+    frameRate: 20,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "walkright2",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "walking",
+      end: 3,
+      zeroPad: 3,
+    }),
+    frameRate: 20,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "standing",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "standing",
+      end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "standing2",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "standing",
+      end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  player = this.physics.add.sprite(140, 120, "player", 1).setInteractive();
+  player2 = this.physics.add.sprite(340, 120, "player2", 1).setInteractive();
 
   this.physics.world.gravity.y = 20000;
 
@@ -111,9 +164,12 @@ function create() {
   var dragstartposition = {};
   var dragstartposition2 = {};
 
+  if (this.ID == 1) {
+
   this.input.on("drag", function (pointer, player, dragX, dragY) {
     var deltaX = player.x - dragstartposition.x;
     var deltaY = player.y - dragstartposition.y;
+
 
     player.x = dragX;
     player2.x = dragstartposition2.x - deltaX;
@@ -126,7 +182,28 @@ function create() {
     //var dist = Phaser.Math.Distance.BetweenPoints(player, player2);
     //console.log(dist);
   });
+}
 
+if (this.ID == 2) {
+
+    this.input.on("drag", function (pointer, player2, dragX, dragY) {
+      var deltaX = player2.x - dragstartposition2.x;
+      var deltaY = player2.y - dragstartposition2.y;
+  
+      player2.x = dragX;
+      player.x = dragstartposition.x - deltaX;
+  
+      player2.y = dragY;
+      player.y = dragstartposition.y - deltaY;
+  
+      submitscore();
+  
+      //var dist = Phaser.Math.Distance.BetweenPoints(player, player2);
+      //console.log(dist);
+    });
+  }
+
+  if (this.ID == 1) {
   this.input.on("dragstart", function (pointer, player, dragX, dragY) {
     dragstartposition.x = player.x;
     dragstartposition.y = player.y;
@@ -134,6 +211,17 @@ function create() {
     dragstartposition2.x = player2.x;
     dragstartposition2.y = player2.y;
   });
+  }
+
+  if (this.ID == 2) {
+    this.input.on("dragstart", function (pointer, player2, dragX, dragY) {
+      dragstartposition.x = player.x;
+      dragstartposition.y = player.y;
+  
+      dragstartposition2.x = player2.x;
+      dragstartposition2.y = player2.y;
+    });
+    }
 
   this.input.on("dragend", function (pointer, gameObject) {
     gameObject.clearTint();
@@ -149,10 +237,9 @@ function create() {
     fill: "#ffffff",
   });
 
-  database.ref('position').on('value', (data) => {
-    const positionx = data.val()
-    console.log(positionx);
-});
+  database.ref("position/positionx").on("value", (data) => {
+    const positionx = data.val();
+  });
 
   function submitscore() {
     var data = {
@@ -163,17 +250,17 @@ function create() {
       positiony2: player2.y,
     };
     var ref = database.ref("position");
-    console.log(data);
     ref.push(data);
     this.getScore(data.val());
   }
 
-  function getScore(){
-    this.player.x = data.positionx;
-    this.player2.x = data.positionx2;
-    this.player.y = data.positiony;
-    this.player2.y = data.positiony2;
-
+  function getScore() {
+    if (this.ID != data.id) {
+      player.x = data.positionx;
+      player2.x = data.positionx2;
+      player.y = data.positiony;
+      player2.y = data.positiony2;
+    }
   }
 }
 
@@ -212,7 +299,10 @@ function update(time, delta) {
       submitscore();
     } else if (cursors.right.isDown) {
       player.body.setVelocityX(280);
+      player.anims.play("walkright", true);
       submitscore();
+    } else {
+      player.anims.stop();
     }
   }
 
@@ -222,7 +312,10 @@ function update(time, delta) {
       submitscore();
     } else if (cursors.right.isDown) {
       player2.body.setVelocityX(280);
+      player2.anims.play("walkright2", true);
       submitscore();
+    } else {
+      player2.anims.stop();
     }
   }
 
@@ -235,28 +328,7 @@ function update(time, delta) {
       positiony2: player2.y,
     };
     var ref = database.ref("position");
-    console.log(data);
     ref.push(data);
-  }
-  
-
-
-  // Update the animation last and give left/right animations precedence over up/down animations
-  if (cursors.left.isDown) {
-    player.anims.play("left", true);
-    player2.anims.play("left", true);
-  } else if (cursors.right.isDown) {
-    player.anims.play("right", true);
-    player2.anims.play("right", true);
-  } else if (cursors.up.isDown) {
-    player.anims.play("up", true);
-    player2.anims.play("up", true);
-  } else if (cursors.down.isDown) {
-    player.anims.play("down", true);
-    player2.anims.play("down", true);
-  } else {
-    player.anims.stop();
-    player2.anims.stop();
   }
 }
 
