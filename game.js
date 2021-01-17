@@ -40,10 +40,10 @@ var game = new Phaser.Game(config);
 var map;
 var cursors;
 
-let player1x = 140;
-let player1y = 120;
-let player2x = 500;
-let player2y = 120;
+let player1x = 500;
+let player1y = 500;
+let player2x = 900;
+let player2y = 920;
 
 const urlParameter = new URLSearchParams(window.location.search);
 this.ID = urlParameter.get("player");
@@ -59,10 +59,12 @@ function preload() {
 
 function create() {
   addDatabaseListener();
+
   map = this.make.tilemap({ key: "map", tileWidth: 20, tileHeight: 20 });
   var tileset = map.addTilesetImage("tiles");
   var layer = map.createLayer(0, tileset, 0, 0);
-  var r1 = this.add.circle(400, 200, 80, 0x6666ff);
+  var r1 = this.add.circle(340, 415, 20, 0xCC0000);
+  var r2 = this.add.circle(1300, 595, 20, 0x6666ff);
 
   map.setCollisionBetween(1, 2);
 
@@ -117,8 +119,8 @@ function create() {
     .sprite(player2x, player2y, "player2", 1)
     .setInteractive();
 
-  player2.x = player2x;
-  player2.y = player2y;
+    player.setPosition(1300, 415);
+    player2.setPosition(340, 595);
 
   this.physics.world.gravity.y = 20000;
 
@@ -129,15 +131,6 @@ function create() {
   this.input.setDraggable(player);
 
   this.input.on("pointerdown", function (pointer) {});
-
-  send("joueur2/", {
-    player1x: player1x,
-    player1y: player1y,
-    player2x: player2x,
-    player2y: player2y,
-
-    UID: UID,
-  });
 
   this.input.dragDistanceThreshold = 16;
 
@@ -218,11 +211,14 @@ function create() {
 }
 
 function update(time, delta) {
-  var dist = Phaser.Math.Distance.Between(player.x, player.y, 400, 200);
-  //console.log(dist);
+  var dist2 = Phaser.Math.Distance.Between(player2.x, player2.y, 1300, 595);
+  var dist = Phaser.Math.Distance.Between(player.x, player.y, 340, 415);
 
-  if (dist < 30) {
+
+  if (dist < 30 && dist2 <30) {
     window.location.href = "index.html";
+    firebase.database().ref("joueur2").remove();
+    firebase.database().ref("joueur1").remove();
   }
 
   var distance = Phaser.Math.Distance.Between(
