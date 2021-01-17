@@ -51,7 +51,7 @@ UID = "_" + Math.random().toString(36).substr(2, 9);
 
 function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
-  this.load.tilemapCSV("map", "NEWTRY.csv");
+  this.load.tilemapCSV("map", "level1.csv");
 
   this.load.atlas("player", "redspritesheet.png", "redsprites.json");
   this.load.atlas("player2", "bluespritesheet.png", "bluesprites.json");
