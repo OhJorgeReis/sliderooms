@@ -51,7 +51,7 @@ UID = "_" + Math.random().toString(36).substr(2, 9);
 
 function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
-  this.load.tilemapCSV("map", "level1.csv");
+  this.load.tilemapCSV("map", "level2.csv");
 
   this.load.atlas("player", "redspritesheet.png", "redsprites.json");
   this.load.atlas("player2", "bluespritesheet.png", "bluesprites.json");
@@ -126,6 +126,7 @@ function create() {
 
   const urlParameter = new URLSearchParams(window.location.search);
   this.ID = urlParameter.get("player");
+  console.log(this.ID);
 
   this.input.setDraggable(player);
 
@@ -215,7 +216,7 @@ function update(time, delta) {
 
 
   if (dist < 30 && dist2 <30) {
-    window.location.href = "index2.html";
+    window.location.href = "index3.html";
     firebase.database().ref("joueur2").remove();
     firebase.database().ref("joueur1").remove();
   }
