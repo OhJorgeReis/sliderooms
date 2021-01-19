@@ -53,8 +53,8 @@ function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
   this.load.tilemapCSV("map", "level1.csv");
 
-  this.load.atlas("player", "redspritesheet.png", "redsprites.json");
-  this.load.atlas("player2", "bluespritesheet.png", "bluesprites.json");
+  this.load.atlas("player", "coolspritesheet.png", "coolsprites.json");
+  this.load.atlas("player2", "bluspritesheet.png", "blusprites.json");
 }
 
 function create() {
@@ -67,23 +67,23 @@ function create() {
   var r2 = this.add.circle(1300, 595, 20, 0x6666ff);
 
   map.setCollisionBetween(1, 2);
-
+  
   this.anims.create({
-    key: "walkright",
+    key: "running",
     frames: this.anims.generateFrameNames("player", {
-      prefix: "walking",
-      end: 3,
+      prefix: "running",
+      end: 11,
       zeroPad: 3,
     }),
-    frameRate: 20,
+    frameRate: 8,
     repeat: -1,
   });
 
   this.anims.create({
-    key: "walkright2",
+    key: "runningb",
     frames: this.anims.generateFrameNames("player2", {
-      prefix: "walking",
-      end: 3,
+      prefix: "runningb",
+      end: 11,
       zeroPad: 3,
     }),
     frameRate: 20,
@@ -97,20 +97,77 @@ function create() {
       end: 1,
       zeroPad: 3,
     }),
-    frameRate: 8,
+    frameRate: 4,
     repeat: -1,
   });
 
   this.anims.create({
-    key: "standing2",
+    key: "standingb",
     frames: this.anims.generateFrameNames("player2", {
-      prefix: "standing",
+      prefix: "standingb",
       end: 1,
       zeroPad: 3,
     }),
     frameRate: 8,
     repeat: -1,
   });
+
+  this.anims.create({
+    key: "left",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "left",
+      end: 11,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "leftb",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "leftb",
+      end: 11,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "jump",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "jump",
+      end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "jumpb",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "jumpb",
+      end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "drag",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "drag",
+      end: 6,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+
 
   player = this.physics.add
     .sprite(player1x, player1y, "player", 1)
@@ -203,8 +260,13 @@ function create() {
 
   cursors = this.input.keyboard.createCursorKeys();
 
-  text = this.add.text(60, 50, Message(), {
-    fontSize: "30px",
+  text = this.add.text(220, 250, Message(), {
+    fontSize: "20px",
+    fill: "#ffffff",
+  });
+
+  text = this.add.text(220, 270, Message2(), {
+    fontSize: "20px",
     fill: "#ffffff",
   });
 }
@@ -251,6 +313,7 @@ function update(time, delta) {
 
   if (cursors.left.isDown) {
     player.body.setVelocityX(-280);
+    player.anims.play("left", true);
     player1x = player.x;
     player1y = player.y;
     player2x = player2.x;
@@ -265,7 +328,7 @@ function update(time, delta) {
     });
   } else if (cursors.right.isDown) {
     player.body.setVelocityX(280);
-    player.anims.play("walkright", true);
+    player.anims.play("running", true);
     console.log(player.x);
     player1x = player.x;
     player1y = player.y;
@@ -295,12 +358,16 @@ function update(time, delta) {
       UID: UID,
     });
   } else {
-    player.anims.stop();
+    player.anims.play("standing", true);
   }
 }
 
 function Message() {
-  return "SCORE";
+  return "Use the arrows to move your player,";
+}
+
+function Message2(){
+  return "try to go near your colored circle."
 }
 
 function send(path, value) {

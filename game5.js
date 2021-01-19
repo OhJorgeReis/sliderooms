@@ -51,9 +51,8 @@ UID = "_" + Math.random().toString(36).substr(2, 9);
 
 function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
-  this.load.tilemapCSV("map", "level2.csv");
+  this.load.tilemapCSV("map", "level5.csv");
 
-  //this.load.atlas("player", "redspritesheet.png", "redsprites.json");
   this.load.atlas("player", "coolspritesheet.png", "coolsprites.json");
   this.load.atlas("player2", "bluspritesheet.png", "blusprites.json");
 }
@@ -64,10 +63,11 @@ function create() {
   map = this.make.tilemap({ key: "map", tileWidth: 20, tileHeight: 20 });
   var tileset = map.addTilesetImage("tiles");
   var layer = map.createLayer(0, tileset, 0, 0);
-  var r1 = this.add.circle(340, 415, 20, 0xCC0000);
+  var r1 = this.add.circle(330, 415, 20, 0xCC0000);
   var r2 = this.add.circle(1300, 595, 20, 0x6666ff);
 
   map.setCollisionBetween(1, 2);
+
   
   this.anims.create({
     key: "running",
@@ -186,8 +186,8 @@ function create() {
     .sprite(player2x, player2y, "player2", 1)
     .setInteractive();
 
-    player.setPosition(950, 415);
-    player2.setPosition(700, 595);
+    player.setPosition(500, 415);
+    player2.setPosition(1300, 755);
 
   this.physics.world.gravity.y = 20000;
 
@@ -235,8 +235,6 @@ function create() {
     player2x = player2.x;
     player2y = player2.y;
 
-    
-
     send("joueur2/", {
       player1x: player1x,
       player1y: player1y,
@@ -253,8 +251,6 @@ function create() {
 
     dragstartposition2.x = player2.x;
     dragstartposition2.y = player2.y;
-
-    player.anims.play("drag", true);
 
     send("joueur2/", {
       player1x: player1x,
@@ -275,24 +271,14 @@ function create() {
 
   cursors = this.input.keyboard.createCursorKeys();
 
-  text = this.add.text(220, 250, Message(), {
-    fontSize: "20px",
-    fill: "#ffffff",
-  });
-
-  text = this.add.text(220, 270, Message2(), {
-    fontSize: "20px",
-    fill: "#ffffff",
-  });
 }
 
 function update(time, delta) {
   var dist2 = Phaser.Math.Distance.Between(player2.x, player2.y, 1300, 595);
-  var dist = Phaser.Math.Distance.Between(player.x, player.y, 340, 415);
-
+  var dist = Phaser.Math.Distance.Between(player.x, player.y, 330, 415);
 
   if (dist < 30 && dist2 <30) {
-    window.location.href = "index3.html";
+    window.location.href = "index6.html";
     firebase.database().ref("joueur2").remove();
     firebase.database().ref("joueur1").remove();
   }
@@ -378,12 +364,7 @@ function update(time, delta) {
 }
 
 function Message() {
-  return "Try to drag your player in the desired direction,";
-}
-
-
-function Message2() {
-  return "but be cautious, your decisions impact the other player.";
+  return "SCORE";
 }
 
 function send(path, value) {

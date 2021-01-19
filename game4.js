@@ -53,8 +53,8 @@ function preload() {
   this.load.image("tiles", "SPRITESHEET.png");
   this.load.tilemapCSV("map", "level4.csv");
 
-  this.load.atlas("player", "redspritesheet.png", "redsprites.json");
-  this.load.atlas("player2", "bluespritesheet.png", "bluesprites.json");
+  this.load.atlas("player", "coolspritesheet.png", "coolsprites.json");
+  this.load.atlas("player2", "bluspritesheet.png", "blusprites.json");
 }
 
 function create() {
@@ -63,30 +63,31 @@ function create() {
   map = this.make.tilemap({ key: "map", tileWidth: 20, tileHeight: 20 });
   var tileset = map.addTilesetImage("tiles");
   var layer = map.createLayer(0, tileset, 0, 0);
-  var r1 = this.add.circle(340, 415, 20, 0xCC0000);
-  var r2 = this.add.circle(1300, 595, 20, 0x6666ff);
+  var r1 = this.add.circle(675, 595, 20, 0xCC0000);
+  var r2 = this.add.circle(960, 595, 20, 0x6666ff);
 
   map.setCollisionBetween(1, 2);
 
+  
   this.anims.create({
-    key: "walkright",
+    key: "running",
     frames: this.anims.generateFrameNames("player", {
-      prefix: "walking",
-      end: 3,
+      prefix: "running",
+      end: 11,
       zeroPad: 3,
     }),
-    frameRate: 20,
+    frameRate: 4,
     repeat: -1,
   });
 
   this.anims.create({
-    key: "walkright2",
+    key: "runningb",
     frames: this.anims.generateFrameNames("player2", {
-      prefix: "walking",
-      end: 3,
+      prefix: "runningb",
+      end: 11,
       zeroPad: 3,
     }),
-    frameRate: 20,
+    frameRate: 8,
     repeat: -1,
   });
 
@@ -97,15 +98,81 @@ function create() {
       end: 1,
       zeroPad: 3,
     }),
+    frameRate: 4,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "standingb",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "standingb",
+      end: 1,
+      zeroPad: 3,
+    }),
     frameRate: 8,
     repeat: -1,
   });
 
   this.anims.create({
-    key: "standing2",
+    key: "left",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "left",
+      end: 11,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "leftb",
     frames: this.anims.generateFrameNames("player2", {
-      prefix: "standing",
+      prefix: "leftb",
+      end: 11,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "jump",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "jump",
       end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "jumpb",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "jumpb",
+      end: 1,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "drag",
+    frames: this.anims.generateFrameNames("player", {
+      prefix: "drag",
+      end: 6,
+      zeroPad: 3,
+    }),
+    frameRate: 8,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "dragb",
+    frames: this.anims.generateFrameNames("player2", {
+      prefix: "dragb",
+      end: 6,
       zeroPad: 3,
     }),
     frameRate: 8,
@@ -204,18 +271,14 @@ function create() {
 
   cursors = this.input.keyboard.createCursorKeys();
 
-  text = this.add.text(60, 50, Message(), {
-    fontSize: "30px",
-    fill: "#ffffff",
-  });
 }
 
 function update(time, delta) {
-  var dist2 = Phaser.Math.Distance.Between(player2.x, player2.y, 1300, 595);
-  var dist = Phaser.Math.Distance.Between(player.x, player.y, 340, 415);
+  var dist2 = Phaser.Math.Distance.Between(player2.x, player2.y, 960, 595);
+  var dist = Phaser.Math.Distance.Between(player.x, player.y, 675, 595);
 
   if (dist < 30 && dist2 <30) {
-    window.location.href = "index3.html";
+    window.location.href = "index5.html";
     firebase.database().ref("joueur2").remove();
     firebase.database().ref("joueur1").remove();
   }
@@ -251,6 +314,7 @@ function update(time, delta) {
 
   if (cursors.left.isDown) {
     player.body.setVelocityX(-280);
+    player.anims.play("left", true);
     player1x = player.x;
     player1y = player.y;
     player2x = player2.x;
@@ -265,7 +329,7 @@ function update(time, delta) {
     });
   } else if (cursors.right.isDown) {
     player.body.setVelocityX(280);
-    player.anims.play("walkright", true);
+    player.anims.play("running", true);
     console.log(player.x);
     player1x = player.x;
     player1y = player.y;
@@ -295,7 +359,7 @@ function update(time, delta) {
       UID: UID,
     });
   } else {
-    player.anims.stop();
+    player.anims.play("standing", true);
   }
 }
 
